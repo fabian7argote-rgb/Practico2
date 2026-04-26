@@ -28,7 +28,7 @@ fun ListaLibrosScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Biblioteca 📚") },
+                title = { Text("Biblioteca ") },
                 actions = {
                     TextButton(onClick = {
                         navController.navigate("listaGeneros")
@@ -89,6 +89,7 @@ fun ListaLibrosScreen(navController: NavController) {
                                         Text(libro.nombre, style = MaterialTheme.typography.titleMedium)
                                         Text("Autor: ${libro.autor}")
                                         Text("Editorial: ${libro.editorial}")
+                                        Text(" ${libro.calificacion}")
                                         Text(
                                             libro.sinopsis.take(50) + "...",
                                             style = MaterialTheme.typography.bodySmall

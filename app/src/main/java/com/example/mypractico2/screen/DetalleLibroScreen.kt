@@ -37,6 +37,7 @@ fun DetalleLibroScreen(navController: NavController, id: Int) {
             Text("Autor: ${it.autor}")
             Text("ISBN: ${it.isbn}")
             Text("Editorial: ${it.editorial}")
+            Text("Calificacion: ${it.calificacion}")
 
             Spacer(modifier = Modifier.height(10.dp))
 

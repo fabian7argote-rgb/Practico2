@@ -18,7 +18,11 @@ fun ListaGenerosScreen(navController: NavController) {
 
     val vm: GeneroViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
     val state by vm.generosState.collectAsState()
+
     var eliminarId by remember { mutableStateOf<Int?>(null) }
+
+    //  (crear género)
+    var nombreGenero by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         vm.obtenerGeneros()
@@ -30,31 +34,75 @@ fun ListaGenerosScreen(navController: NavController) {
         }
     ) { padding ->
 
-        when (state) {
+        Column(modifier = Modifier
+            .padding(padding)
+            .padding(16.dp)) {
 
-            is UiState.Loading -> CircularProgressIndicator()
+            // FORMULARIO CREAR GENERO
+            OutlinedTextField(
+                value = nombreGenero,
+                onValueChange = { nombreGenero = it },
+                label = { Text("Nuevo género") },
+                modifier = Modifier.fillMaxWidth()
+            )
 
-            is UiState.Error -> Text("Error")
+            Spacer(modifier = Modifier.height(10.dp))
 
-            is UiState.Success -> {
-                val generos = (state as UiState.Success<List<Genero>>).data
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
 
-                LazyColumn(modifier = Modifier.padding(padding)) {
+                    if (nombreGenero.isNotEmpty()) {
+                        vm.crearGenero(nombreGenero)
+                        nombreGenero = "" // limpiar campo
+                    }
 
-                    items(generos) { genero ->
+                }
+            ) {
+                Text("Crear género")
+            }
 
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(10.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(genero.nombre)
+            Spacer(modifier = Modifier.height(20.dp))
 
-                            Button(onClick = {
-                                eliminarId = genero.id
-                            }) {
-                                Text("Eliminar")
+            // LISTA
+            when (state) {
+
+                is UiState.Loading -> CircularProgressIndicator()
+
+                is UiState.Error -> Text("Error al cargar")
+
+                is UiState.Success -> {
+                    val generos = (state as UiState.Success<List<Genero>>).data
+
+                    LazyColumn {
+
+                        items(generos) { genero ->
+
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .padding(12.dp)
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+
+                                    Text(genero.nombre)
+
+                                    Button(
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = MaterialTheme.colorScheme.error
+                                        ),
+                                        onClick = {
+                                            eliminarId = genero.id
+                                        }
+                                    ) {
+                                        Text("Eliminar")
+                                    }
+                                }
                             }
                         }
                     }
@@ -63,6 +111,7 @@ fun ListaGenerosScreen(navController: NavController) {
         }
     }
 
+    // CONFIRMAR ELIMINAR
     eliminarId?.let { id ->
         AlertDialog(
             onDismissRequest = { eliminarId = null },
