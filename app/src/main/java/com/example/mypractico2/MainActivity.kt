@@ -3,45 +3,38 @@ package com.example.mypractico2
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.mypractico2.ui.theme.MyPractico2Theme
+import androidx.navigation.compose.*
+import com.example.mypractico2.screen.DetalleLibroScreen
+import com.example.mypractico2.screen.FormLibroScreen
+import com.example.mypractico2.screen.ListaGenerosScreen
+import com.example.mypractico2.screen.ListaLibrosScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
         setContent {
-            MyPractico2Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+            val navController = rememberNavController()
+
+            NavHost(navController, startDestination = "listaLibros") {
+
+                composable("listaLibros") {
+                    ListaLibrosScreen(navController)
+                }
+
+                composable("detalle/{id}") {
+                    val id = it.arguments?.getString("id")!!.toInt()
+                    DetalleLibroScreen(navController, id)
+                }
+
+                composable("formLibro") {
+                    FormLibroScreen(navController)
+                }
+
+                composable("listaGeneros") {
+                    ListaGenerosScreen(navController)
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MyPractico2Theme {
-        Greeting("Android")
     }
 }

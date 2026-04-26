@@ -50,6 +50,10 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     //
     implementation(libs.retrofit)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.coil.compose)
+    implementation(libs.converter.gson)
     //
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
