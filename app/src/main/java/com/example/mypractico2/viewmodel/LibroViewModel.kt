@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mypractico2.model.Libro
 import com.example.mypractico2.model.LibroGeneroRequest
+import com.example.mypractico2.model.LibroRequest
 import com.example.mypractico2.network.RetrofitClient
 import com.example.mypractico2.utils.UiState
 import kotlinx.coroutines.flow.*
@@ -43,32 +44,36 @@ class LibroViewModel : ViewModel() {
         }
     }
 
-    fun crearLibroConGeneros(libro: Libro, generos: List<Int>) {
+    fun crearLibroConGeneros(nombre: String,
+                             autor: String,
+                             editorial: String,
+                             imagen: String,
+                             sinopsis: String,
+                             isbn: String,
+                             generos: List<Int>) {
+
         viewModelScope.launch {
-            _librosState.value = UiState.Loading
             try {
-                val response = RetrofitClient.api.crearLibro(libro)
+                val request = LibroRequest(
+                    nombre,
+                    autor,
+                    editorial,
+                    imagen,
+                    sinopsis,
+                    isbn,
+                    0.0
+                )
+
+                val response = RetrofitClient.api.crearLibro(request)
 
                 if (response.isSuccessful) {
-
-                    val libroCreado = response.body()
-
-                    libroCreado?.let {
-                        generos.forEach { generoId ->
-                            RetrofitClient.api.agregarGeneroALibro(
-                                LibroGeneroRequest(it.id, generoId)
-                            )
-                        }
-                    }
-
                     obtenerLibros()
-
                 } else {
-                    _librosState.value = UiState.Error("Error al crear")
+                    println(response.errorBody()?.string())
                 }
 
             } catch (e: Exception) {
-                _librosState.value = UiState.Error(e.message ?: "Error")
+                e.printStackTrace()
             }
         }
     }

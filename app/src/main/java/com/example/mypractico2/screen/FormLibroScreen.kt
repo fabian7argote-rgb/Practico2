@@ -31,6 +31,7 @@ fun FormLibroScreen(navController: NavController) {
 
     val generosState by vmGenero.generosState.collectAsState()
     val seleccionados = remember { mutableStateListOf<Int>() }
+    var error by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         vmGenero.obtenerGeneros()
@@ -41,6 +42,14 @@ fun FormLibroScreen(navController: NavController) {
     }
 
     Column(modifier = Modifier.padding(16.dp)) {
+        if (error.isNotEmpty()) {
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.error
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+        }
 
         OutlinedTextField(nombre, { nombre = it }, label = { Text("Nombre") })
         OutlinedTextField(autor, { autor = it }, label = { Text("Autor") })
@@ -84,7 +93,9 @@ fun FormLibroScreen(navController: NavController) {
                         )
                     }
                 }
+
             }
+
         }
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -95,45 +106,59 @@ fun FormLibroScreen(navController: NavController) {
 
                 when {
                     Validaciones.campoVacio(nombre) -> {
-                        println("Nombre vacío")
+                        error = "El nombre está vacío"
                         return@Button
                     }
 
                     Validaciones.campoVacio(autor) -> {
-                        println("Autor vacío")
+                        error = "El autor está vacío"
                         return@Button
                     }
 
                     Validaciones.campoVacio(editorial) -> {
-                        println("Editorial vacío")
+                        error = "La editorial está vacía"
                         return@Button
                     }
 
                     !Validaciones.esISBNValido(isbn) -> {
-                        println("ISBN inválido")
+                        error = "ISBN inválido"
                         return@Button
                     }
 
                     !Validaciones.urlValida(imagen) -> {
-                        println("URL inválida")
+                        error = "La URL de imagen no es válida"
                         return@Button
                     }
 
                     seleccionados.isEmpty() -> {
-                        println("Selecciona al menos un género")
+                        error = "Selecciona al menos un género"
                         return@Button
                     }
                 }
-            val libro = Libro(
-                0, nombre, autor, editorial,
-                imagen, sinopsis, isbn, 0.0
-            )
 
-            vmLibro.crearLibroConGeneros(libro, seleccionados)
-            navController.popBackStack()
-        }
+
+                error = ""
+
+                val libro = Libro(
+                    0, nombre, autor, editorial,
+                    imagen, sinopsis, isbn, 0.0
+                )
+
+                vmLibro.crearLibroConGeneros(
+                    nombre,
+                    autor,
+                    editorial,
+                    imagen,
+                    sinopsis,
+                    isbn,
+                    seleccionados
+                )
+                navController.popBackStack()
+            }
         ) {
             Text("Guardar")
         }
     }
+
+
 }

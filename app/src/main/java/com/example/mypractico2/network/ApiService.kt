@@ -4,6 +4,7 @@ package com.example.mypractico2.network
 import com.example.mypractico2.model.Genero
 import com.example.mypractico2.model.Libro
 import com.example.mypractico2.model.LibroGeneroRequest
+import com.example.mypractico2.model.LibroRequest
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -20,7 +21,7 @@ interface ApiService {
 
     @POST("libros")
     suspend fun crearLibro(
-        @Body libro: Libro
+        @Body libro: LibroRequest
     ): Response<Libro>
 
     @PUT("libros/{id}")
