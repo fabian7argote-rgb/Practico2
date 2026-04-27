@@ -29,7 +29,6 @@ interface ApiService {
         @Path("id") id: Int,
         @Body libro: Libro
     ): Response<Libro>
-
     @DELETE("libros/{id}")
     suspend fun eliminarLibro(
         @Path("id") id: Int

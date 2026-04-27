@@ -27,8 +27,9 @@ class MainActivity : ComponentActivity() {
                     DetalleLibroScreen(navController, id)
                 }
 
-                composable("formLibro") {
-                    FormLibroScreen(navController)
+                composable("formLibro/{id}") {
+                    val id = it.arguments?.getString("id")?.toIntOrNull()
+                    FormLibroScreen(navController, id)
                 }
 
                 composable("listaGeneros") {

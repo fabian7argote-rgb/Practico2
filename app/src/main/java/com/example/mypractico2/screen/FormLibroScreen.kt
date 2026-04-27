@@ -11,13 +11,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mypractico2.model.Genero
 import com.example.mypractico2.model.Libro
+import com.example.mypractico2.network.RetrofitClient
 import com.example.mypractico2.utils.UiState
 import com.example.mypractico2.utils.Validaciones
 import com.example.mypractico2.viewmodel.GeneroViewModel
 import com.example.mypractico2.viewmodel.LibroViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FormLibroScreen(navController: NavController) {
+fun FormLibroScreen(navController: NavController, id: Int?) {
 
     val vmLibro: LibroViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
     val vmGenero: GeneroViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
@@ -32,6 +33,27 @@ fun FormLibroScreen(navController: NavController) {
     val generosState by vmGenero.generosState.collectAsState()
     val seleccionados = remember { mutableStateListOf<Int>() }
     var error by remember { mutableStateOf("") }
+    LaunchedEffect(id) {
+        if (id != null) {
+            try {
+                val res = RetrofitClient.api.getLibro(id)
+
+                if (res.isSuccessful && res.body() != null) {
+                    val libro = res.body()!!
+
+                    nombre = libro.nombre ?: ""
+                    autor = libro.autor ?: ""
+                    editorial = libro.editorial ?: ""
+                    imagen = libro.imagen ?: ""
+                    sinopsis = libro.sinopsis ?: ""
+                    isbn = libro.isbn ?: ""
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         vmGenero.obtenerGeneros()
@@ -136,23 +158,36 @@ fun FormLibroScreen(navController: NavController) {
                     }
                 }
 
-
                 error = ""
 
-                val libro = Libro(
-                    0, nombre, autor, editorial,
-                    imagen, sinopsis, isbn, 0.0
-                )
+                if (id == null) {
+                    // 🔹 CREAR
+                    vmLibro.crearLibroConGeneros(
+                        nombre,
+                        autor,
+                        editorial,
+                        imagen,
+                        sinopsis,
+                        isbn,
+                        seleccionados
+                    )
 
-                vmLibro.crearLibroConGeneros(
-                    nombre,
-                    autor,
-                    editorial,
-                    imagen,
-                    sinopsis,
-                    isbn,
-                    seleccionados
-                )
+                } else {
+                    // 🔹 EDITAR
+                    val libro = Libro(
+                        id,
+                        nombre,
+                        autor,
+                        editorial,
+                        imagen,
+                        sinopsis,
+                        isbn,
+                        0.0
+                    )
+
+                    vmLibro.actualizarLibro(id, libro)
+                }
+
                 navController.popBackStack()
             }
         ) {

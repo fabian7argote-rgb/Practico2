@@ -53,6 +53,11 @@ fun DetalleLibroScreen(navController: NavController, id: Int) {
                 }) {
                     Text("Eliminar")
                 }
+                Button(onClick = {
+                    navController.navigate("formLibro/${it.id}")
+                }) {
+                    Text("Editar")
+                }
             }
         }
 
